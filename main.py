@@ -25,9 +25,6 @@ async def validate_extensions(filename: str):
     if not (filename.endswith(".csv") or filename.endswith(".csv.gz")):
         raise HTTPException(status_code=400, detail="Invalid file extension. Allowed extensions are .csv and .csv.gz")   
 
-
-
-
 @app.get("/", response_class=HTMLResponse)
 async def redirect_to_index():
     return RedirectResponse(url="/index")
@@ -35,7 +32,18 @@ async def redirect_to_index():
 
 @app.get("/index", response_class=HTMLResponse)
 async def index():
-    return HTMLResponse(content="<html><body><h1>Index!</h1></body></html>")
+    html_content = """
+    <html>
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+        <body>
+            <h1>para k kieres saber eso jaja saludos!</h1>
+            <p>Creo que lo que quieres ver es <a href="/docs">el swagger</a>.</p>
+        </body>
+    </html>
+    """    
+    return HTMLResponse(content=html_content)
 
 @app.post("/splitcsv/{environment}", response_class=JSONResponse)
 async def splitcsvpre(uploaded_file: UploadFile, environment: str = Depends(validate_environment)):
@@ -45,7 +53,7 @@ async def splitcsvpre(uploaded_file: UploadFile, environment: str = Depends(vali
     file_location = os.path.join("uploads", uploaded_file.filename)
     with open(file_location, "wb+") as file_object:
         file_object.write(uploaded_file.file.read())
-    splitfiles = split_by_grupo(file_location, "pre")
+    splitfiles = split_by_grupo(file_location, environment=environment)
     return splitfiles
 
 

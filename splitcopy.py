@@ -11,7 +11,7 @@ def split_by_grupo(input_file: str, environment: str) -> str:
     if input_file is None:
         raise ValueError("invalid argument")
     # Clear the output folder if it exists
-    nfs_drive_folder =  os.path.join("var/nfsharefile", environment)
+    nfs_drive_folder =  os.path.join("/var/nfsharefile", environment)
     output_folder = os.path.join(nfs_drive_folder, "apidata", f"output_{str(uuid.uuid4())}")
     if os.path.exists(output_folder):
         shutil.rmtree(output_folder)
