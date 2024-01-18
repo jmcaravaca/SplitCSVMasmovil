@@ -6,12 +6,13 @@ from loguru import logger
 from datetime import datetime
 
 
-def split_by_grupo(input_file: str) -> str:
+def split_by_grupo(input_file: str, environment: str) -> str:
 # Input file name
     if input_file is None:
         raise ValueError("invalid argument")
     # Clear the output folder if it exists
-    output_folder = f"output_{str(uuid.uuid4())}"
+    nfs_drive_folder =  os.path.join("var/nfsharefile", environment)
+    output_folder = os.path.join(nfs_drive_folder, "apidata", f"output_{str(uuid.uuid4())}")
     if os.path.exists(output_folder):
         shutil.rmtree(output_folder)
         logger.info("Cleaned Output Folder")
@@ -38,13 +39,13 @@ def split_by_grupo(input_file: str) -> str:
                         TO '{outputfile}' (HEADER, DELIMITER '|');"""
             con.execute(query)
             logger.info(f"Written CSV to {outputfile}")
-            results[value] = outputfile
+            results[value] = outputfile.replace(nfs_drive_folder, "X:").replace("/", "\\")
     except Exception as e:
         logger.error(e)
     finally:
         # Close the DuckDB connection
         con.close()
-        shutil.rmtree(output_folder)
+        #shutil.rmtree(output_folder)
         return results
 
 if __name__ == "__main__":
